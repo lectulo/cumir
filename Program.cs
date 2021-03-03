@@ -5,15 +5,20 @@ using cumir;
 
 namespace cumir
 {
-    class Program
+    public class Program
     {
-        public static Thread tr = Thread.CurrentThread;
-        public const string path = @"C:\s.txt";                                         // path to map
+        static Thread tr = Thread.CurrentThread;
+        static bool maze = true;                                                        // create labirint?
+        const string path = @"C:/s.txt";                                                // path to map
+        const int mazeX = 0;
+        const int mazeY = 0;
 
-        static class mp                                                                 // maps's class
+
+
+        public static class mp                                                          // maps's class
         {
-            public const int x0 = 20;                                                   // map width
-            public const int y0 = 10;                                                   // map height
+            public const int x0 = 25;                                                   // map width
+            public const int y0 = 13;                                                   // map height
 
             public static string[,] map = new string[x0, y0];
             public static ConsoleColor[,] colMap = new ConsoleColor[x0, y0];
@@ -21,8 +26,19 @@ namespace cumir
 
         public class vec
         {
-            public int x = 0;
-            public int y = 0;
+            public int x;
+            public int y;
+
+            public vec()
+            {
+                x = 0;
+                y = 0;
+            }
+            public vec(int X, int Y)
+            {
+                x = X;
+                y = Y;
+            }
         }
 
         public class bot                                                                // robot's class
@@ -191,6 +207,8 @@ namespace cumir
 
         public static void Main(string[] args)
         {
+            //Console.SetBufferSize(Program.mp.x0 + 2, Program.mp.y0 + 2);
+            Console.ForegroundColor = ConsoleColor.White;
             FileInfo file = new FileInfo(path);
             Console.CursorVisible = false;
 
@@ -199,6 +217,9 @@ namespace cumir
                 StreamReader sr = new StreamReader(path);
                 Console.BackgroundColor = ConsoleColor.Black;
                 Console.Clear();
+
+                if(maze) Program.mp.map = cumir.MazeGenerator.Generate(mazeX, mazeY);
+
                 for (int y = 0; y <= Program.mp.y0 + 1; y++)
                 {
                     string m = sr.ReadLine();
@@ -210,7 +231,8 @@ namespace cumir
                         if (x == 0 || y == 0 || x == Program.mp.x0 + 1 || y == Program.mp.y0 + 1) Console.Write("#");
                         else
                         {
-                            Program.mp.map[x - 1, y - 1] = m[x].ToString();
+                            if(!maze)Program.mp.map[x - 1, y - 1] = m[x].ToString();
+                            if (Program.mp.map[x - 1, y - 1] == null) Program.mp.map[x - 1, y - 1] = " ";
                             Program.mp.colMap[x - 1, y - 1] = ConsoleColor.Black;
                             Console.Write(Program.mp.map[x - 1, y - 1]);
                         }

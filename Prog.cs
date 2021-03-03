@@ -8,14 +8,14 @@ namespace cumir
     {
         public static void prog()
         {
-            cumir.Program.bot r = new Program.bot(5, 5);
-            r.Down();
+            cumir.Program.bot r = new Program.bot(0, 0);
+            /*r.Down();
             r.Left();
             r.Up();
             r.Paint();
             r.Right();
             r.Paint(ConsoleColor.White);
-            r.Right();
+            r.Right();*/
             r.Control();
         }
     }
