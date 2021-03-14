@@ -4,23 +4,77 @@ using cumir;
 
 namespace cumir
 {
-    public static class AStar
+    public static class BFS
     {
-        class cell
+        public class cell
         {
-            public int distanceT;
-            public int distanceS;
-            public int cost;
+            public Program.vec lastPos = new Program.vec();
+            public bool visible = true;
         }
 
-        static List<Program.vec> way = new List<Program.vec>();
-        static List<Program.vec> activeCells = new List<Program.vec>();
-        static cell[,] map = new cell[Program.mp.x0, Program.mp.y0];
-
-        /*public static List<Program.vec> search(Program.vec pos, Program.vec target)
+        public static Stack<string> Search(Program.vec sPos, Program.vec tPos)
         {
+            cell[,] map = new cell[Program.mp.x0, Program.mp.y0];
+            Queue<Program.vec> all = new Queue<Program.vec>();
+            all.Enqueue(sPos);
+
+            for(int y = 0; y < Program.mp.y0; y++)
+            {
+                for (int x = 0; x < Program.mp.x0; x++)
+                {
+                    map[x, y] = new cell();
+                    if (Program.mp.map[x, y] != " ") map[x, y].visible = false;
+                }
+            }
+
             
-        }*/
+            while(all.Count > 0)
+            {
+                Program.vec current = all.Dequeue();
+                if(current.x > 0 && map[current.x - 1, current.y].visible)
+                {
+                    map[current.x - 1, current.y].lastPos = current;
+                    map[current.x - 1, current.y].visible = false;
+                    all.Enqueue(new Program.vec(current.x - 1, current.y));
+                }
+                if (current.x < Program.mp.x0 - 1 && map[current.x + 1, current.y].visible)
+                {
+                    map[current.x + 1, current.y].lastPos = current;
+                    map[current.x + 1, current.y].visible = false;
+                    all.Enqueue(new Program.vec(current.x + 1, current.y));
+                }
+                if (current.y > 0 && map[current.x, current.y - 1].visible)
+                {
+                    map[current.x, current.y - 1].lastPos = current;
+                    map[current.x, current.y - 1].visible = false;
+                    all.Enqueue(new Program.vec(current.x, current.y - 1));
+                }
+                if (current.y < Program.mp.y0 - 1 && map[current.x, current.y + 1].visible)
+                {
+                    map[current.x, current.y + 1].lastPos = current;
+                    map[current.x, current.y + 1].visible = false;
+                    all.Enqueue(new Program.vec(current.x, current.y + 1));
+                }
+                if (current == tPos) return Build(map, current, sPos);
+            }
+
+            return new Stack<string>();
+        }
+
+        static Stack<string> Build(cell[,] map, Program.vec pos, Program.vec sPos)
+        {
+            Stack<string> ret = new Stack<string>();
+            while(pos != sPos)
+            {
+                if (map[pos.x, pos.y].lastPos == new Program.vec(pos.x - 1, pos.y)) ret.Push("RIGHT");
+                else if (map[pos.x, pos.y].lastPos == new Program.vec(pos.x + 1, pos.y)) ret.Push("LEFT");
+                else if (map[pos.x, pos.y].lastPos == new Program.vec(pos.x, pos.y - 1)) ret.Push("DOWN");
+                else if (map[pos.x, pos.y].lastPos == new Program.vec(pos.x, pos.y + 1)) ret.Push("UP");
+                pos = map[pos.x, pos.y].lastPos;
+            }
+
+            return ret;
+        }
     }
 
     public static class MazeGenerator
@@ -33,9 +87,9 @@ namespace cumir
             bool[,] mapb = new bool[Program.mp.x0, Program.mp.y0];
             Random rand = new Random();
 
-            for (int x = 0; x < Program.mp.x0; x++)
+            for (int y = 0; y < Program.mp.y0; y++)
             {
-                for(int y = 0; y < Program.mp.y0; y++)
+                for(int x = 0; x < Program.mp.x0; x++)
                 {
                     if (x % 2 == 1 || y % 2 == 1) map[x, y] = "#";
                     mapb[x, y] = false;

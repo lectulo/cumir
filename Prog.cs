@@ -16,6 +16,7 @@ namespace cumir
             r.Right();
             r.Paint(ConsoleColor.White);
             r.Right();*/
+            r.Goto(2, 3);
             r.Control();
         }
     }

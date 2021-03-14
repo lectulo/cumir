@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.IO;
+using System.Collections.Generic;
 using cumir;
 
 namespace cumir
@@ -8,8 +9,8 @@ namespace cumir
     public class Program
     {
         static Thread tr = Thread.CurrentThread;
-        static bool maze = true;                                                        // create labirint?
-        const string path = @"C:/s.txt";                                                // path to map
+        static bool maze = true;                                                        // create maze?
+        const string path = @"C:\s.txt";                                                // path to map
         const int mazeX = 0;
         const int mazeY = 0;
 
@@ -39,6 +40,15 @@ namespace cumir
                 x = X;
                 y = Y;
             }
+
+            public static bool operator ==(vec vc1, vec vc2)
+            {
+                return (vc1.x == vc2.x && vc1.y == vc2.y);
+            }
+            public static bool operator !=(vec vc1, vec vc2)
+            {
+                return (vc1.x != vc2.x || vc1.y != vc2.y);
+            }
         }
 
         public class bot                                                                // robot's class
@@ -46,7 +56,7 @@ namespace cumir
             ConsoleColor paintCol = ConsoleColor.Blue;
             ConsoleColor botCol = ConsoleColor.Green;                                   // color of robot
             string model = "@";                                                         // robot's texture
-            int st = 300;                                                               // delay time
+            int st = 100;                                                               // delay time
 
             public vec pos = new vec();
             bool ok = true;
@@ -201,6 +211,19 @@ namespace cumir
                         case ConsoleKey.Z: this.Paint(ConsoleColor.Red); break;
                         case ConsoleKey.X: this.Paint(ConsoleColor.White); break;
                     }
+                }
+            }
+
+            public void Goto(int x, int y)
+            {
+                Stack<string> moves = new Stack<string>(new Stack<string>(cumir.BFS.Search(this.pos, new vec(x, y))));
+                while(moves.Count > 0)
+                {
+                    if (moves.Peek() == "UP") this.Up();
+                    else if (moves.Peek() == "DOWN") this.Down();
+                    else if (moves.Peek() == "LEFT") this.Left();
+                    else if (moves.Peek() == "RIGHT") this.Right();
+                    moves.Pop();
                 }
             }
         }
